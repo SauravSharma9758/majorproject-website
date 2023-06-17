@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>DiseasePrediction - Predict a Disease</title>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/smoothness/jquery-ui.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 20px;
+			{% comment %} background-color: #f5f8f5; {% endcomment %}
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			background-image: url("C:/Users/z004revf/OneDrive - Siemens Healthineers/Desktop/B.E. Project/Disease Prediction/PredictionModel/Model/templates/IMG_8287.JPG");	
+		}
+		.background_image{
+			{% comment %} background-image: url("C:/Users/z004revf/OneDrive - Siemens Healthineers/Desktop/B.E. Project/Disease Prediction/PredictionModel/Model/templates/IMG_8287.JPG"); {% endcomment %}
+	
+			background-size:cover;
+	
+			background-repeat: no-repeat;
+			height:100px;
+			width:100px;
+	
+		}
+		
+	
+		
+		.container {
+			max-width: 800px;
+			margin-top: -100px;
+			margin-right: -480px;
+			background-color: #fff;
+			padding: 20px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+		
+		h1 {
+			color: blue;
+			margin-top: 0;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+		
+		p {
+			color: #666;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+		
+		form {
+			margin-bottom: 20px;
+			text-align: center;
+		}
+		
+		label {
+			display: block;
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+		
+		input[type="text"],
+		textarea {
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			box-sizing: border-box;
+			margin-bottom: 10px;
+			font-size: 16px;
+		}
+		
+		input[type="submit"] {
+			background-color: #3897f0;
+			color: #fff;
+			border: none;
+			padding: 10px 20px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+		
+		input[type="submit"]:hover {
+			background-color: #45a049;
+		}
+		
+		.link-buttons {
+			text-align: center;
+			margin-top: 20px;
+		}
+		
+		.link-buttons a {
+			margin-right: 10px;
+			text-decoration: none;
+			color: #666;
+			padding: 10px 20px;
+			background-color: #3897f0;
+			color: #fff;
+			border-radius: 4px;
+			transition: background-color 0.3s ease;
+			font-size: 16px;
+		}
+		
+		.link-buttons a:hover {
+			background-color: #45a049;
+		}
+		
+		.predicted-disease {
+			text-align: center;
+			margin-top: 20px;
+		}
+		
+		.bottom-buttons {
+			text-align: center;
+			margin-top: 600px;
+		}
+		
+		.bottom-buttons a {
+			margin: 0 10px;
+			padding: 10px 20px;
+			background-color: #3897f0;
+			color: #fff;
+			border-radius: 4px;
+			text-decoration: none;
+			font-size: 16px;
+		}
+		
+		.bottom-buttons a:hover {
+			background-color: #3897f0;
+		}
+		
+	</style>
+	<script>
+		$(document).ready(function(){
+			var symptoms = [{% for symptom in symptoms_fetched %}"{{ symptom }}",{% endfor %}];
+			symptoms.pop();
+			$("#search-symptom").autocomplete({
+				source: function(request, response) {
+					var results = $.ui.autocomplete.filter(symptoms, request.term);
+					response(results.slice(0, 10)); // Limit the number of results shown
+				}
+			});
+			$("#search-symptom").on("autocompleteselect", function(event, ui) {
+				var symptomsInput = $("#symptoms-input");
+				var currentSymptoms = symptomsInput.val();
+				if (currentSymptoms) {
+					symptomsInput.val(currentSymptoms + ", " + ui.item.value);
+				} else {
+					symptomsInput.val(ui.item.value);
+				}
+				return false;
+			});
+		});
+	</script>
+</head>
+<body>
+	<div class="container">
+		<h1>Predict a Disease</h1>
+		<p>Enter your symptoms to find out the likelihood of having a disease:</p>
+		<form method="post">
+			{% csrf_token %}
+			<label for="search-symptom">Search for a symptom:</label>
+			<input type="text" id="search-symptom" name="search-symptom">
+			<br>
+			<label for="symptoms-input">Symptoms:</label>
+			<textarea id="symptoms-input" name="symptoms" rows="5" cols="40"></textarea>
+			<br>
+			<input type="submit" value="Predict">
+		</form>
+			{% if predicted_disease %}
+		<div class="predicted-disease">
+			<h2>Predicted Disease:</h2>
+			<p>{{ predicted_disease }}</p>
+		</div>
+			{% endif %}
+		</div>
+	<div class="bottom-buttons">
+		<a href="{% url 'home' %}">Go back to the home page</a>
+		<a href="{% url 'about' %}">Learn more about us</a>
+	</div>
+	<div class="background_image">
+	</div>
+</body>
+</html>
